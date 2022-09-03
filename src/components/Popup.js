@@ -1,42 +1,59 @@
-import React from 'react';
-import { Dialog, DialogTitle, DialogContent, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import Button from '@mui/material/Button';
-import { makeStyles } from '@mui/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import Slide from '@mui/material/Slide';
+import { styled, useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import * as React from 'react';
 
-const useStyles = makeStyles((theme) => ({
-    dialogWrapper: {
-        padding: theme.spacing(2),
-        position: 'absolute',
-        top: theme.spacing(5)
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+    '& .MuiDialogContent-root': {
+        padding: theme.spacing(2)
     },
-    dialogTitle: {
-        paddingRight: '0px'
+    '& .MuiDialogActions-root': {
+        padding: theme.spacing(1)
     }
 }));
 
-export default function Popup(props) {
-    const { title, children, openPopup, setOpenPopup } = props;
-    const classes = useStyles();
+export default function CustomizedDialogs({ title, children, isOpen, setIsOpen }) {
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const handleClose = () => {
+        setIsOpen(false);
+    };
 
     return (
-        <Dialog open={openPopup} maxWidth="md" classes={{ paper: classes.dialogWrapper }}>
-            <DialogTitle className={classes.dialogTitle}>
-                <div style={{ display: 'flex' }}>
-                    <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
-                        {title}
-                    </Typography>
-                    <Button
-                        color="secondary"
-                        onClick={() => {
-                            setOpenPopup(false);
+        <BootstrapDialog
+            onClose={handleClose}
+            aria-labelledby="customized-dialog-title"
+            open={isOpen}
+            fullScreen={fullScreen}
+            TransitionComponent={Transition}
+        >
+            <DialogTitle sx={{ m: 0, p: 2 }}>
+                {title}
+                {isOpen ? (
+                    <IconButton
+                        aria-label="close"
+                        onClick={() => setIsOpen(false)}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500]
                         }}
                     >
                         <CloseIcon />
-                    </Button>
-                </div>
+                    </IconButton>
+                ) : null}
             </DialogTitle>
             <DialogContent dividers>{children}</DialogContent>
-        </Dialog>
+        </BootstrapDialog>
     );
 }

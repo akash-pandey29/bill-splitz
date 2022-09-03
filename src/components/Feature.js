@@ -1,6 +1,5 @@
 import { Box, Container, Grid, Hidden, Paper } from '@mui/material';
 import React from 'react';
-import image from '../assets/images/dummyImage.png';
 // import { RenderSectionHeading } from '../common/commonComponent';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import Typography from '@mui/material/Typography';
@@ -36,9 +35,7 @@ export default function Feature() {
                 <Container>
                     <Grid container spacing={1}>
                         <Grid item sm={5}>
-                            <Paper elevation={3}>
-                                <img src={image} alt="" width={'100%'} />
-                            </Paper>
+                            <Paper elevation={3}></Paper>
                         </Grid>
                         <Grid item xs={12} sm={7}>
                             <Typography variant="h4" color="white" nowrap sx={{ flexGrow: 1 }}>

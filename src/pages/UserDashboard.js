@@ -46,9 +46,9 @@ const style = {
 function DashboardContent() {
     return (
         <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <AppBarPanel />
             <Box sx={{ display: 'flex' }}>
-                <CssBaseline />
-                <AppBarPanel />
                 <Box
                     component="main"
                     sx={{

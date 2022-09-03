@@ -12,7 +12,6 @@ import Feature from 'components/Feature';
 import HeaderTextAnimation from 'components/HeaderTextAnimation';
 import config from 'configs/config';
 import { useNavigate } from 'react-router-dom';
-import heroBackground from '../assets/images/heroBackground.png';
 
 const titleItems = ['on Trips', 'with Flatmates', 'with your Partner', 'in Hotels', 'with Anyone'];
 
@@ -42,9 +41,6 @@ const classes = {
         overflow: 'hidden',
         backgroundColor: 'green',
         animation: 'move 10s ease-in-out infinite alternate'
-    },
-    heroSection: {
-        backgroundImage: `url(${heroBackground})`
     }
 };
 

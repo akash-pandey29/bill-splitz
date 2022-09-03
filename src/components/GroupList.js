@@ -20,12 +20,13 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { Route, Routes, Outlet, useNavigate } from 'react-router-dom';
 import GroupDataService from 'services/GroupDataService';
+import Popup from './Popup';
 
 const GroupList = () => {
     const [groupList, setGroupList] = useState();
     const [isOpen, setIsOpen] = React.useState(false);
     const [isNewGroupAdded, setIsNewGroupAdded] = useState(false);
-    const { userDetail } = AppData();
+    const { userDetail, setPageLoader } = AppData();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -49,9 +50,11 @@ const GroupList = () => {
 
     const getGroupList = async (uid) => {
         if (uid) {
+            setPageLoader((prev) => prev + 1);
             const data = await GroupDataService.getGroupListByCurrentUserId(uid);
             console.log(data.docs);
             setGroupList(data.docs.map((doc) => ({ ...doc.data(), gid: doc.id })));
+            setPageLoader((prev) => prev - 1);
         }
     };
 
@@ -61,7 +64,7 @@ const GroupList = () => {
 
     return (
         <>
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
                 <Grid container spacing={3}>
                     {/* Chart */}
                     <Grid item xs={12} md={8} lg={9}>
@@ -79,7 +82,9 @@ const GroupList = () => {
                                 <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={() => setIsOpen(true)}>
                                     Create
                                 </Button>
-                                <AddGroup isOpen={isOpen} setIsOpen={setIsOpen} setIsNewGroupAdded={setIsNewGroupAdded} />
+                                <Popup title="Create Group" isOpen={isOpen} setIsOpen={setIsOpen}>
+                                    <AddGroup setIsNewGroupAdded={setIsNewGroupAdded} />
+                                </Popup>
                             </Stack>
 
                             <List sx={{ width: '100%', bgcolor: 'background.paper' }}>

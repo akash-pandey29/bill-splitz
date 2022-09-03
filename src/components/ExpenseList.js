@@ -63,31 +63,33 @@ const ExpenseList = () => {
     };
 
     const createBalanceList = () => {
+        const tempBalanceList = [];
         expenseList.forEach((e) => {
             let lender = e.paidBy;
             e.contributers.forEach((c) => {
                 if (!c.isBillSettled) {
                     let borrower = c.contributerId;
-                    if (balanceList.length > 0) {
-                        isBalanceExist = balanceList.find(
+                    if (tempBalanceList.length > 0) {
+                        const isBalanceExist = tempBalanceList.find(
                             (b) => (b.lender === lender && b.borrower === borrower) || (b.lender === borrower && b.borrower === lender)
                         );
                         if (isBalanceExist) {
-                            setBalanceList(balanceList.filter((x) => x !== isBalanceExist));
+                            tempBalanceList = tempBalanceList.filter((x) => x !== isBalanceExist);
                             isBalanceExist.balanceAmount =
                                 isBalanceExist.lender === lender
                                     ? isBalanceExist.balanceAmount + e.splitAmount
                                     : isBalanceExist.balanceAmount - e.splitAmount;
-                            setBalanceList((prev) => [...prev, isBalanceExist]);
+                            tempBalanceList.push(isBalanceExist);
                         } else {
-                            setBalanceList((prev) => [...prev, { lender: lender, borrower: borrower, balanceAmount: e.splitAmount }]);
+                            tempBalanceList.push({ lender: lender, borrower: borrower, balanceAmount: e.splitAmount });
                         }
                     } else {
-                        setBalanceList([{ lender: lender, borrower: borrower, balanceAmount: e.splitAmount }]);
+                        tempBalanceList.push({ lender: lender, borrower: borrower, balanceAmount: e.splitAmount });
                     }
                 }
             });
         });
+        setBalanceList(tempBalanceList);
     };
 
     const handleBackButtonClick = () => {
@@ -96,9 +98,9 @@ const ExpenseList = () => {
 
     return (
         <>
-            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={8} lg={9}>
+                    <Grid item xs={12} md={7} lg={8}>
                         <Paper
                             sx={{
                                 p: 2,
@@ -118,15 +120,20 @@ const ExpenseList = () => {
                                     Add
                                 </Button>
                                 {/* <AddExpense isOpen={isOpen} setIsOpen={setIsOpen} /> */}
-                                <Popup title="Add Expense" openPopup={isOpen} setOpenPopup={setIsOpen}>
-                                    <AddExpense />
+                                <Popup title="Add Expense" isOpen={isOpen} setIsOpen={setIsOpen}>
+                                    <AddExpense
+                                        memberList={currentGroup ? currentGroup.memberIds : []}
+                                        currentGroupId={groupId}
+                                        setIsOpen={setIsOpen}
+                                        getExpenses={getExpenses}
+                                    />
                                 </Popup>
                             </Stack>
                             <ExpenseListData expenseList={expenseList} />
                         </Paper>
                     </Grid>
                     {/* Recent Deposits */}
-                    <Grid item xs={12} md={4} lg={3}>
+                    <Grid item xs={12} md={5} lg={4}>
                         <Paper
                             sx={{
                                 p: 2,
@@ -155,7 +162,7 @@ const ExpenseList = () => {
                                 <Typography variant="h5" component="span" color="gray" textAlign="center" nowrap sx={{ flexGrow: 1 }}>
                                     Balances
                                 </Typography>
-                                <BalanceList />
+                                <BalanceList balanceList={balanceList} />
                             </Stack>
                         </Paper>
                     </Grid>

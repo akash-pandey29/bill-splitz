@@ -14,6 +14,7 @@ import { UserAuth } from 'contexts/AuthContext';
 import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '../../node_modules/@mui/material/index';
+import { AppData } from 'contexts/AppContext';
 const theme = createTheme({
     status: {
         danger: '#e53e3e'
@@ -51,6 +52,7 @@ export default function SignUp() {
     const { createUser } = UserAuth();
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const { setPageLoader } = AppData();
     const navigate = useNavigate();
 
     async function handleSubmit(event) {
@@ -61,6 +63,7 @@ export default function SignUp() {
 
         try {
             setError('');
+            setPageLoader((prev) => prev + 1);
             setLoading(true);
             await createUser(emailRef.current.value, passwordRef.current.value, firstNameRef.current.value, lastNameRef.current.value);
             navigate('/userDashboard');
@@ -69,6 +72,7 @@ export default function SignUp() {
             setError('Failed to create the account');
         }
         setLoading(false);
+        setPageLoader((prev) => prev + 1);
     }
 
     return (

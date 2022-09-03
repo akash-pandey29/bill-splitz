@@ -1,35 +1,18 @@
-import { useEffect, useState } from 'react';
-import { Button, Modal, TextField, Typography } from '@mui/material';
+import { Button, TextField } from '@mui/material';
+import DialogActions from '@mui/material/DialogActions';
 import Divider from '@mui/material/Divider';
-import { Box } from '@mui/system';
-import { UserAuth } from 'contexts/AuthContext';
-import { useRef } from 'react';
-import { AppData } from '../contexts/AppContext';
 import { Timestamp } from 'firebase/firestore';
-
-import { styled } from '@mui/material/styles';
-import SearchMember from './SearchMember';
+import { useEffect, useRef, useState } from 'react';
 import GroupDataService from 'services/GroupDataService';
+import { AppData } from '../contexts/AppContext';
+import SearchMember from './SearchMember';
 
-const SytledModal = styled(Modal)({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-});
-
-const UserBox = styled(Box)({
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    marginBottom: '20px'
-});
-
-const AddGroup = ({ isOpen, setIsOpen, setIsNewGroupAdded }) => {
+const AddGroup = ({ setIsOpen, setIsNewGroupAdded }) => {
     const [error, setError] = useState('');
     const [groupId, setGroupId] = useState('');
     const groupTitleRef = useRef();
     const groupDescriptionRef = useRef();
-    const { addGroup, userList, getAllUsers, setIsGroupListUpdated, userDetail } = AppData();
+    const { userDetail } = AppData();
     const [selectedUsers, setSelectedUsers] = useState([]);
 
     useEffect(() => {
@@ -77,54 +60,40 @@ const AddGroup = ({ isOpen, setIsOpen, setIsNewGroupAdded }) => {
 
     return (
         <>
-            <SytledModal
-                open={isOpen}
-                onClose={(e) => setOpen(false)}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box bgcolor={'background.default'} color={'text.primary'} p={3} borderRadius={3}>
-                    <Box sx={{ flexWrap: 'wrap' }}>
-                        <Typography variant="h5" component="span" color="gray" textAlign="center" nowrap sx={{ flexGrow: 1 }}>
-                            Create Group
-                        </Typography>
-                        <Button onClick={() => setIsOpen(false)} nowrap sx={{ flexGrow: 1 }}>
-                            X
-                        </Button>
-                    </Box>
-
-                    <TextField
-                        sx={{ width: '100%' }}
-                        id="groupTitle"
-                        placeholder="Ex: Goa Trip 2022"
-                        variant="standard"
-                        margin="normal"
-                        required
-                        fullWidth
-                        label="Title"
-                        name="groupTitle"
-                        autoComplete="Title"
-                        inputRef={groupTitleRef}
-                    />
-                    <TextField
-                        sx={{ width: '100%' }}
-                        id="groupDescription"
-                        placeholder="Ex: This group will have all our 2022 Goa trip expenses!!!"
-                        multiline
-                        rows={2}
-                        variant="standard"
-                        margin="normal"
-                        fullWidth
-                        label="Description"
-                        name="groupDescription"
-                        autoComplete="Description"
-                        inputRef={groupDescriptionRef}
-                    />
-                    <Divider />
-                    <SearchMember selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers} />
-                    <Button onClick={handleSubmit}>Create</Button>
-                </Box>
-            </SytledModal>
+            <TextField
+                sx={{ width: '100%' }}
+                id="groupTitle"
+                placeholder="Ex: Goa Trip 2022"
+                variant="standard"
+                margin="normal"
+                required
+                fullWidth
+                label="Title"
+                name="groupTitle"
+                autoComplete="Title"
+                inputRef={groupTitleRef}
+            />
+            <TextField
+                sx={{ width: '100%' }}
+                id="groupDescription"
+                placeholder="Ex: This group will have all our 2022 Goa trip expenses!!!"
+                multiline
+                rows={2}
+                variant="standard"
+                margin="normal"
+                fullWidth
+                label="Description"
+                name="groupDescription"
+                autoComplete="Description"
+                inputRef={groupDescriptionRef}
+            />
+            <Divider />
+            <SearchMember selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers} />
+            <DialogActions>
+                <Button varient="contained" onClick={handleSubmit}>
+                    Create
+                </Button>
+            </DialogActions>
         </>
     );
 };

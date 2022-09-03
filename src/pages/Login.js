@@ -16,6 +16,7 @@ import { UserAuth } from 'contexts/AuthContext';
 import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '../../node_modules/@mui/material/index';
+import { AppData } from 'contexts/AppContext';
 
 const theme = createTheme({
     status: {
@@ -51,10 +52,12 @@ export default function Login() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const { login } = UserAuth();
+    const { setPageLoader } = AppData();
     const [loading, setLoading] = useState(false);
 
     async function handleSubmit(event) {
         event.preventDefault();
+        setPageLoader((prev) => prev + 1);
         setLoading(true);
         setError('');
         try {
@@ -65,6 +68,7 @@ export default function Login() {
             console.log(e.message);
         }
         setLoading(false);
+        setPageLoader((prev) => prev - 1);
     }
 
     return (

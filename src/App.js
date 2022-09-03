@@ -9,10 +9,12 @@ import { AppData } from 'contexts/AppContext';
 import { useEffect } from 'react';
 import ExpenseList from 'components/ExpenseList';
 import GroupList from 'components/GroupList';
+import CssBaseline from '@mui/material/CssBaseline';
+import { Loader } from 'components/Loader';
 
 function App() {
     const { user } = UserAuth();
-    const { userDetail, getUserDetailsById, getAllUsers } = AppData();
+    const { userDetail, getUserDetailsById, getAllUsers, pageLoader } = AppData();
 
     function loadInitialData(uid) {
         getUserDetailsById(uid);
@@ -30,6 +32,7 @@ function App() {
 
     return (
         <div className="App">
+            {pageLoader && <Loader />}
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/signup" element={<SignUp />} />

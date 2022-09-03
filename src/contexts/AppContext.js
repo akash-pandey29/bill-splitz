@@ -7,8 +7,10 @@ const AppContext = createContext();
 export const AppContextProvider = ({ children }) => {
     const [userDetail, setUserDetail] = useState({});
     const [userList, setUserList] = useState([]);
+    const [pageLoader, setPageLoader] = useState(0);
 
     const getAllUsers = async () => {
+        setPageLoader((prev) => prev + 1);
         const q = query(collection(db, 'users'));
         const querySnapshot = await getDocs(q);
         querySnapshot.forEach((doc) => {
@@ -16,10 +18,12 @@ export const AppContextProvider = ({ children }) => {
             setUserList((prev) => [...prev, tempUserDetail]);
             //console.log(doc.id, ' => ', doc.data());
         });
+        setPageLoader((prev) => prev - 1);
     };
 
     const getUserDetailsById = async (uid) => {
         if (uid) {
+            setPageLoader((prev) => prev + 1);
             const docRef = doc(db, 'users', uid);
             const docSnap = await getDoc(docRef);
 
@@ -31,6 +35,7 @@ export const AppContextProvider = ({ children }) => {
                 // doc.data() will be undefined in this case
                 console.log('No such document!');
             }
+            setPageLoader((prev) => prev - 1);
         }
     };
 
@@ -40,7 +45,9 @@ export const AppContextProvider = ({ children }) => {
                 userDetail,
                 getUserDetailsById,
                 userList,
-                getAllUsers
+                getAllUsers,
+                pageLoader,
+                setPageLoader
             }}
         >
             {children}
