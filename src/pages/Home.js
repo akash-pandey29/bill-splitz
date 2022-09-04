@@ -4,36 +4,15 @@ import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import AppBarPanel from 'components/AppBarPanel';
-import Copyright from 'components/Copyright';
 import Feature from 'components/Feature';
 import HeaderTextAnimation from 'components/HeaderTextAnimation';
-import config from 'configs/config';
+import Paper from '@mui/material/Paper';
 import { useNavigate } from 'react-router-dom';
+import { experimentalStyled as styled } from '@mui/material/styles';
 
 const titleItems = ['on Trips', 'with Flatmates', 'with your Partner', 'in Hotels', 'with Anyone'];
-
-const theme = createTheme({
-    status: {
-        danger: '#e53e3e'
-    },
-    palette: {
-        primary: {
-            main: config.appPrimaryColor,
-            darker: config.appPrimaryColor
-        },
-        secondary: {
-            main: '#ffc107',
-            darker: config.appPrimaryColor
-        },
-        neutral: {
-            main: '#64748B',
-            contrastText: '#fff'
-        }
-    }
-});
 
 const classes = {
     scrollItem: {
@@ -43,11 +22,17 @@ const classes = {
         animation: 'move 10s ease-in-out infinite alternate'
     }
 };
-
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary
+}));
 export default function Home() {
     const navigate = useNavigate();
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <CssBaseline />
             <AppBarPanel />
             <main>
@@ -63,35 +48,54 @@ export default function Home() {
                         <Typography component="h1" variant="h2" align="center" color="text.primary" gutterBottom>
                             Splitting Bills
                             <HeaderTextAnimation textList={titleItems} align="center" />
-                            made easy
                         </Typography>
                         <Typography variant="h5" align="center" color="text.secondary" paragraph>
                             Split your shared bills of Trips, meals, rent with your friends, family, group easily and efficiently. Register
                             today with your friends
                         </Typography>
                         <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
-                            <Button variant="contained">Get Started</Button>
+                            <Button variant="contained" onClick={() => navigate('/signup')}>
+                                Get Started
+                            </Button>
                         </Stack>
                     </Container>
                 </Box>
-                <Container maxWidth={false}>
-                    {/* End hero unit */}
-                    <Grid container padding={2} spacing={2} style={{ backgroundColor: config.appPrimaryColor }}>
-                        <Feature />
+                <Grid container spacing={2} sx={{ minHeight: '85vh', p: 2 }}>
+                    <Grid item xs={12} md={4} lg={5}>
+                        <Paper
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                minHeight: '80%'
+                            }}
+                        ></Paper>
                     </Grid>
-                </Container>
+                    <Grid item xs={12} md={8} lg={7}>
+                        <Paper
+                            sx={{
+                                p: 1,
+                                display: 'flex',
+                                flexDirection: 'row',
+                                minHeight: '80%',
+                                backgroundColor: 'complimentary.main'
+                            }}
+                        >
+                            {/* <Typography component="h4" variant="h4" align="left" color="white" gutterBottom>
+                                <b>Our Features</b>
+                            </Typography> */}
+                            <Box sx={{ flexGrow: 1 }}>
+                                <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                                    {Array.from(Array(6)).map((_, index) => (
+                                        <Grid item xs={12} sm={4} md={4} key={index} sx={{ height: '50%' }}>
+                                            <Item>xs=2</Item>
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                            </Box>
+                        </Paper>
+                    </Grid>
+                </Grid>
             </main>
-            {/* Footer */}
-            <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">
-                <Typography variant="h6" align="center" gutterBottom>
-                    Footer
-                </Typography>
-                <Typography variant="subtitle1" align="center" color="text.secondary" component="p">
-                    Something here to give the footer a purpose!
-                </Typography>
-                <Copyright />
-            </Box>
-            {/* End footer */}
-        </ThemeProvider>
+        </>
     );
 }

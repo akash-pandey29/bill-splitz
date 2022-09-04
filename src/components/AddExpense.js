@@ -1,7 +1,9 @@
 import { Button, TextField } from '@mui/material';
+import Alert from '@mui/material/Alert';
 import Checkbox from '@mui/material/Checkbox';
 import DialogActions from '@mui/material/DialogActions';
 import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
 import InputLabel from '@mui/material/InputLabel';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -10,54 +12,53 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
-import { useTheme } from '@mui/material/styles';
-import * as React from 'react';
-import { useRef, useState } from 'react';
-import { AppData } from '../contexts/AppContext';
 import Typography from '@mui/material/Typography';
 import { Timestamp } from 'firebase/firestore';
+import { useState } from 'react';
 import ExpenseDataService from 'services/ExpenseDataService';
+import { AppData } from '../contexts/AppContext';
 
-const AddExpense = ({ isOpen, setIsOpen, setIsNewGroupAdded, memberList, currentGroupId, getExpenses }) => {
-    const { addGroup, userList, getAllUsers, setIsGroupListUpdated, userDetail } = AppData();
-    const theme = useTheme();
-    const [error, setError] = useState('');
+const AddExpense = ({ isOpen, setIsOpen, setIsNewGroupAdded, memberList, currentGroupId, getExpenses, currentGroup, getBalanceLogs }) => {
+    const { addGroup, userList, getAllUsers, setIsGroupListUpdated, userDetail, setSnackBarAlertObject, snackBarAlertObject } = AppData();
     const [expense, setExpense] = useState({
         expenseTitle: '',
         expenseAmount: '',
         paidBy: ''
     });
+    const [formError, setFormError] = useState('');
+    const [inputError, setInputError] = useState({
+        expenseTitle: '',
+        expenseAmount: '',
+        paidBy: ''
+    });
     const [contributers, setContributers] = useState([]);
-    const paidByRef = useRef();
-
     const [selectedUsers, setSelectedUsers] = useState([]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-        const newExpense = {
-            title: expense.expenseTitle,
-            amount: expense.expenseAmount,
-            paidBy: expense.paidBy,
-            createdBy: userDetail.uid,
-            createdDate: Timestamp.fromDate(new Date()),
-            groupId: currentGroupId,
-            splitAmount: Number(expense.expenseAmount / (contributers.length + 1)).toFixed(2),
-            contributers: contributers.map((c) => {
-                return { contributerId: c, isBillSettled: false };
-            })
-        };
-        console.log(newExpense);
-        try {
-            await ExpenseDataService.addExpense(newExpense);
-            console.log('Expense Added Successfully');
-            setIsOpen(false);
+        setFormError('');
+        if (await checkValidation()) {
+            const splitAmount = Number(expense.expenseAmount / (contributers.length + 1)).toFixed(2);
+            let newExpense = {
+                title: expense.expenseTitle,
+                amount: Number(expense.expenseAmount),
+                paidBy: expense.paidBy,
+                createdBy: userDetail.uid,
+                createdDate: Timestamp.fromDate(new Date()),
+                groupId: currentGroupId,
+                splitAmount: Number(splitAmount),
+                contributers: contributers.map((c) => {
+                    return { contributerId: c, isBillSettled: false };
+                })
+            };
+            await ExpenseDataService.addExpenseTransaction(newExpense, currentGroupId, contributers);
             getExpenses(currentGroupId);
-        } catch (err) {
-            setError(err);
-            console.log('Expense Add Error: ', err.message);
+            getBalanceLogs(currentGroupId);
+            setSnackBarAlertObject({ ...snackBarAlertObject, open: true, severity: 'success', alertMessage: 'Expense Added Successfully' });
+            setIsOpen(false);
         }
     };
+
     const handleChange = (e) => {
         if (e.target.name === 'paidBy') setContributers([]);
         setExpense((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -68,8 +69,48 @@ const AddExpense = ({ isOpen, setIsOpen, setIsNewGroupAdded, memberList, current
         else setContributers((prev) => [...prev, value]);
     };
 
+    const checkValidation = () => {
+        const amountRegex = /^[0-9]/i;
+        let expenseTitleErrorMessage = '';
+        let expenseAmountErrorMessage = '';
+        let expensePaidByErrorMessage = '';
+        let expenseContributersErrorMessage = '';
+
+        //Check for Expense Title
+        if (expense.expenseTitle === '') expenseTitleErrorMessage = 'Title is mandatory';
+        else expenseTitleErrorMessage = '';
+
+        //Check for Expense Amount
+        if (expense.expenseAmount === '') expenseAmountErrorMessage = 'Enter an Amount';
+        else if (!expense.expenseAmount.match(amountRegex)) expenseAmountErrorMessage = 'Amount is not valid. Please enter a numeric value';
+        else expenseAmountErrorMessage = '';
+
+        //Check for Paid By
+        if (expense.paidBy === '') expensePaidByErrorMessage = 'Please select a payer';
+        else expensePaidByErrorMessage = '';
+
+        //Check for Contributers
+        if (contributers.length === 0) {
+            expenseContributersErrorMessage = 'Please select atleast one participant';
+            setFormError(expenseContributersErrorMessage);
+        } else expenseContributersErrorMessage = '';
+
+        setInputError({
+            expenseTitle: expenseTitleErrorMessage,
+            expenseAmount: expenseAmountErrorMessage,
+            paidBy: expensePaidByErrorMessage
+        });
+        return expenseTitleErrorMessage === '' &&
+            expenseAmountErrorMessage === '' &&
+            expensePaidByErrorMessage === '' &&
+            expenseContributersErrorMessage === ''
+            ? true
+            : false;
+    };
+
     return (
         <>
+            {formError && <Alert severity="error">{formError}</Alert>}
             <TextField
                 sx={{ width: '100%' }}
                 id="expenseTitle"
@@ -82,6 +123,8 @@ const AddExpense = ({ isOpen, setIsOpen, setIsNewGroupAdded, memberList, current
                 name="expenseTitle"
                 autoComplete="Title"
                 onChange={handleChange}
+                error={Boolean(inputError.expenseTitle !== '')}
+                helperText={inputError.expenseTitle}
             />
             <TextField
                 sx={{ width: '100%' }}
@@ -95,12 +138,17 @@ const AddExpense = ({ isOpen, setIsOpen, setIsNewGroupAdded, memberList, current
                 name="expenseAmount"
                 autoComplete="Amount"
                 onChange={handleChange}
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                error={Boolean(inputError.expenseAmount !== '')}
+                helperText={inputError.expenseAmount}
             />
-            <FormControl required variant="standard" sx={{ mt: 1, mb: 2, width: '100%' }}>
+            <FormControl required variant="standard" sx={{ mt: 1, mb: 2, width: '100%' }} error={Boolean(inputError.paidBy !== '')}>
                 <InputLabel id="paidBySelectLabel">Paid By</InputLabel>
                 <Select labelId="paidBySelectLabel" id="paidBy" name="paidBy" onChange={handleChange} label="Paid By" fullWidth>
-                    {memberList.length > 0 &&
+                    <MenuItem value="">
+                        <em>None</em>
+                    </MenuItem>
+                    {userDetail.uid &&
+                        memberList.length > 0 &&
                         userList.length > 0 &&
                         memberList.map((value) => {
                             const labelId = value;
@@ -108,20 +156,22 @@ const AddExpense = ({ isOpen, setIsOpen, setIsNewGroupAdded, memberList, current
                             const userFullName = `${user.firstName} ${user.lastName}`;
                             return (
                                 <MenuItem key={labelId} value={labelId}>
-                                    {userFullName}
+                                    {userDetail.uid === value ? 'You' : userFullName}
                                 </MenuItem>
                             );
                         })}
                 </Select>
+                <FormHelperText>{inputError.paidBy}</FormHelperText>
             </FormControl>
             {expense.paidBy && (
                 <>
                     <Typography component="span" variant="body1" color="gray">
-                        Select contributers
+                        Select Participants
                     </Typography>
                     <Paper elevation={3} sx={{ mb: 3 }}>
                         <List dense sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                            {memberList.length > 0 &&
+                            {userDetail.uid &&
+                                memberList.length > 0 &&
                                 userList.length > 0 &&
                                 memberList
                                     .filter((a) => a !== expense.paidBy)
@@ -143,7 +193,7 @@ const AddExpense = ({ isOpen, setIsOpen, setIsNewGroupAdded, memberList, current
                                                 disablePadding
                                             >
                                                 <ListItemButton>
-                                                    <ListItemText id={labelId} primary={userFullName} />
+                                                    <ListItemText id={labelId} primary={userDetail.uid === value ? 'You' : userFullName} />
                                                 </ListItemButton>
                                             </ListItem>
                                         );
@@ -152,7 +202,9 @@ const AddExpense = ({ isOpen, setIsOpen, setIsNewGroupAdded, memberList, current
                     </Paper>
                     <Typography component="span" variant="body1" color="gray">
                         Split Value: &#x20b9;{' '}
-                        {expense.expenseAmount && contributers.length > 0 ? Number(expense.expenseAmount / (contributers.length + 1)) : ''}
+                        {expense.expenseAmount && contributers.length > 0
+                            ? Number(expense.expenseAmount / (contributers.length + 1)).toFixed(2)
+                            : ''}
                     </Typography>
                 </>
             )}

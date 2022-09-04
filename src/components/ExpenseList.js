@@ -19,15 +19,33 @@ import MemberList from './MemberList';
 import GroupDataService from 'services/GroupDataService';
 import BalanceList from './BalanceList';
 import Popup from './Popup';
+import BalanceLogDataService from 'services/BalanceLogDataService';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import SnackBarAlert from './SnackBarAlert';
+import ConfirmDialog from './ConfirmDialog';
+import deleteGroupIconImage from '../assets/images/deleteGroup.png';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import SearchMember from './SearchMember';
 
 const ExpenseList = () => {
     const params = useParams();
     const [groupId, setGroupId] = useState(params.id);
     const [groupList, setGroupList] = useState([]);
     const [currentGroup, setCurrentGroup] = useState();
-    const [isOpen, setIsOpen] = React.useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [isAddMemberOpen, setIsAddMemberOpen] = React.useState(false);
     const [expenseList, setExpenseList] = useState([]);
-    const [balanceList, setBalanceList] = useState([]);
+    const [balanceLogList, setBalanceLogList] = useState([]);
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const confirmDialogObj = {
+        confirmDialogHeader: 'Delete Group',
+        confirmDialogMessage:
+            'Are you sure you want to delete this Group Permanently? All the records related to this group will be deleted as well',
+        confirmDialogImageIcon: deleteGroupIconImage,
+        type: 'danger'
+    };
+
     const { userDetail } = AppData();
     const navigate = useNavigate();
 
@@ -41,9 +59,8 @@ const ExpenseList = () => {
     }, []);
 
     useEffect(() => {
-        if (expenseList.length > 0) {
-            createBalanceList();
-            console.log('balance', balanceList);
+        if (groupId) {
+            getBalanceLogs(groupId);
         }
     }, [expenseList]);
 
@@ -59,65 +76,53 @@ const ExpenseList = () => {
         if (gid) {
             const snapDoc = await GroupDataService.getGroup(gid);
             setCurrentGroup(snapDoc.data());
+            setSelectedUsers(snapDoc.data().memberIds);
         }
     };
 
-    const createBalanceList = () => {
-        const tempBalanceList = [];
-        expenseList.forEach((e) => {
-            let lender = e.paidBy;
-            e.contributers.forEach((c) => {
-                if (!c.isBillSettled) {
-                    let borrower = c.contributerId;
-                    if (tempBalanceList.length > 0) {
-                        const isBalanceExist = tempBalanceList.find(
-                            (b) => (b.lender === lender && b.borrower === borrower) || (b.lender === borrower && b.borrower === lender)
-                        );
-                        if (isBalanceExist) {
-                            tempBalanceList = tempBalanceList.filter((x) => x !== isBalanceExist);
-                            isBalanceExist.balanceAmount =
-                                isBalanceExist.lender === lender
-                                    ? isBalanceExist.balanceAmount + e.splitAmount
-                                    : isBalanceExist.balanceAmount - e.splitAmount;
-                            tempBalanceList.push(isBalanceExist);
-                        } else {
-                            tempBalanceList.push({ lender: lender, borrower: borrower, balanceAmount: e.splitAmount });
-                        }
-                    } else {
-                        tempBalanceList.push({ lender: lender, borrower: borrower, balanceAmount: e.splitAmount });
-                    }
-                }
-            });
-        });
-        setBalanceList(tempBalanceList);
+    const getBalanceLogs = async (gid) => {
+        if (gid) {
+            const data = await BalanceLogDataService.getAllBalanceLogsByGroupId(gid);
+            setBalanceLogList(data.docs.map((doc) => ({ ...doc.data(), balanceLogId: doc.id })));
+        }
     };
 
     const handleBackButtonClick = () => {
         navigate(-1);
     };
 
+    const handleDeleteGroup = () => {
+        setOpenConfirmDialog(true);
+    };
+
+    const handleSubmitConfirmDialog = async () => {
+        await GroupDataService.deleteGroupTransaction(groupId);
+        setOpenConfirmDialog(false);
+        navigate(-1);
+    };
+
     return (
         <>
             <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+                <SnackBarAlert />
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={7} lg={8}>
                         <Paper
                             sx={{
                                 p: 2,
                                 display: 'flex',
-                                flexDirection: 'column',
-                                minHeight: 600
+                                flexDirection: 'column'
                             }}
                         >
                             <Stack direction="row" spacing={2}>
                                 <IconButton color="primary" aria-label="back-to-group-list" onClick={() => handleBackButtonClick()}>
                                     <ArrowBackIosSharpIcon />
                                 </IconButton>
-                                <Typography variant="h5" component="span" color="gray" textAlign="center" nowrap sx={{ flexGrow: 1 }}>
+                                <Typography variant="h5" component="span" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
                                     Your Expenses
                                 </Typography>
-                                <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={() => setIsOpen(true)}>
-                                    Add
+                                <Button variant="contained" size="small" onClick={() => setIsOpen(true)}>
+                                    <PlaylistAddIcon />
                                 </Button>
                                 {/* <AddExpense isOpen={isOpen} setIsOpen={setIsOpen} /> */}
                                 <Popup title="Add Expense" isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -126,13 +131,14 @@ const ExpenseList = () => {
                                         currentGroupId={groupId}
                                         setIsOpen={setIsOpen}
                                         getExpenses={getExpenses}
+                                        currentGroup={currentGroup}
+                                        getBalanceLogs={getBalanceLogs}
                                     />
                                 </Popup>
                             </Stack>
-                            <ExpenseListData expenseList={expenseList} />
+                            <ExpenseListData expenseList={expenseList} getExpenses={getExpenses} />
                         </Paper>
                     </Grid>
-                    {/* Recent Deposits */}
                     <Grid item xs={12} md={5} lg={4}>
                         <Paper
                             sx={{
@@ -143,9 +149,18 @@ const ExpenseList = () => {
                             }}
                         >
                             <Stack spacing={1} direction="column">
-                                <Typography variant="h5" component="span" color="gray" textAlign="center" nowrap sx={{ flexGrow: 1 }}>
-                                    Members
-                                </Typography>
+                                <Stack direction="row" spacing={2}>
+                                    <Typography variant="h5" component="span" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
+                                        Members
+                                    </Typography>
+                                    <Button variant="contained" size="small" onClick={() => setIsAddMemberOpen(true)}>
+                                        <PersonAddAlt1Icon />
+                                    </Button>
+                                </Stack>
+                                <Popup title="Add Expense" isOpen={isAddMemberOpen} setIsOpen={setIsAddMemberOpen}>
+                                    <SearchMember selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers} />
+                                    <Button>Save</Button>
+                                </Popup>
                                 <MemberList memberList={currentGroup ? currentGroup.memberIds : []} />
                             </Stack>
                         </Paper>
@@ -159,15 +174,44 @@ const ExpenseList = () => {
                             }}
                         >
                             <Stack spacing={1} direction="column">
-                                <Typography variant="h5" component="span" color="gray" textAlign="center" nowrap sx={{ flexGrow: 1 }}>
-                                    Balances
+                                <Typography variant="h5" component="span" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
+                                    Balance Summary
                                 </Typography>
-                                <BalanceList balanceList={balanceList} />
+                                <BalanceList balanceLogList={balanceLogList} getBalanceLogs={getBalanceLogs} />
                             </Stack>
                         </Paper>
+                        {currentGroup && userDetail.uid && userDetail.uid === currentGroup.createdBy && (
+                            <Paper
+                                sx={{
+                                    mt: 2,
+                                    p: 2,
+                                    display: 'flex',
+                                    flexDirection: 'column'
+                                }}
+                            >
+                                <Button
+                                    sx={{
+                                        backgroundColor: 'danger.main',
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: 'danger.dark'
+                                        }
+                                    }}
+                                    onClick={handleDeleteGroup}
+                                >
+                                    Delete Group
+                                </Button>
+                            </Paper>
+                        )}
                     </Grid>
                 </Grid>
             </Container>
+            <ConfirmDialog
+                confirmDialogObj={confirmDialogObj}
+                openConfirmDialog={openConfirmDialog}
+                setOpenConfirmDialog={setOpenConfirmDialog}
+                handleSubmitConfirmDialog={handleSubmitConfirmDialog}
+            />
         </>
     );
 };

@@ -16,7 +16,6 @@ import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 import MuiAppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
@@ -82,7 +81,7 @@ function AppBarPanel(props) {
 
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', bgcolor: 'primary' }}>
-            <Box sx={{ bgcolor: 'primary' }}>
+            <Box sx={{ backgroundColor: 'primary.dark', color: 'white' }}>
                 <Typography variant="h4" component="span" color="inherit">
                     Bill
                 </Typography>
@@ -93,9 +92,8 @@ function AppBarPanel(props) {
 
             {user !== null ? (
                 <>
-                    <Box sx={{ bgcolor: 'primary' }}>
-                        {/* <Avatar {...stringAvatar(userName)} /> */}
-                        <Typography component="span" variant="subtitle1" color="gray" nowrap sx={{ flexGrow: 1 }}>
+                    <Box sx={{ backgroundColor: 'primary.dark', color: 'white' }}>
+                        <Typography component="span" variant="subtitle1" color="gray" sx={{ flexGrow: 1 }}>
                             @{userName}
                         </Typography>
                     </Box>
@@ -148,7 +146,7 @@ function AppBarPanel(props) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Grid nowrap sx={{ flexGrow: 1 }}>
+                    <Grid sx={{ flexGrow: 1 }}>
                         <Typography variant="h4" component="span" color="inherit">
                             Bill
                         </Typography>
@@ -157,12 +155,12 @@ function AppBarPanel(props) {
                         </Typography>
                     </Grid>
                     <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                        <Grid nowrap sx={{ flexGrow: 1 }} justifyContent="flex-end" style={{ display: 'flex' }}>
+                        <Grid sx={{ flexGrow: 1 }} justifyContent="flex-end" style={{ display: 'flex' }}>
                             {user !== null ? (
                                 <>
                                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                        <Avatar {...stringAvatar(userName)} />
-                                        <Typography component="span" variant="subtitle1" color="white" nowrap sx={{ flexGrow: 1 }}>
+                                        <Avatar {...stringAvatar(userName, 20)} />
+                                        <Typography component="span" variant="subtitle1" color="white" sx={{ flexGrow: 1 }}>
                                             {userName}
                                         </Typography>
                                     </IconButton>

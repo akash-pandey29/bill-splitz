@@ -1,4 +1,5 @@
-function stringToColor(string) {
+import React from 'react';
+const stringToColor = (string) => {
     let hash = 0;
     let i;
 
@@ -16,15 +17,18 @@ function stringToColor(string) {
     /* eslint-enable no-bitwise */
 
     return color;
-}
+};
 
-export function stringAvatar(name) {
+export const stringAvatar = (name, size = 15) => {
     return {
         sx: {
             bgcolor: stringToColor(name),
-            border: '1px solid white',
-            marginRight: '5px'
+            border: '2px solid white',
+            marginRight: '5px',
+            width: size * 2,
+            height: size * 2,
+            fontSize: size
         },
         children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`
     };
-}
+};

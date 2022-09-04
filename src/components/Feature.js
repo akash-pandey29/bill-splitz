@@ -38,10 +38,10 @@ export default function Feature() {
                             <Paper elevation={3}></Paper>
                         </Grid>
                         <Grid item xs={12} sm={7}>
-                            <Typography variant="h4" color="white" nowrap sx={{ flexGrow: 1 }}>
+                            <Typography variant="h4" color="white" sx={{ flexGrow: 1 }}>
                                 Features
                             </Typography>
-                            <Typography variant="h6" color="white" nowrap sx={{ flexGrow: 1 }}>
+                            <Typography variant="h6" color="white" sx={{ flexGrow: 1 }}>
                                 Hello I'm Himanshu lal
                             </Typography>
                             <br />

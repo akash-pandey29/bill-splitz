@@ -8,6 +8,11 @@ export const AppContextProvider = ({ children }) => {
     const [userDetail, setUserDetail] = useState({});
     const [userList, setUserList] = useState([]);
     const [pageLoader, setPageLoader] = useState(0);
+    const [snackBarAlertObject, setSnackBarAlertObject] = useState({
+        open: false,
+        severity: '',
+        alertMessage: ''
+    });
 
     const getAllUsers = async () => {
         setPageLoader((prev) => prev + 1);
@@ -47,7 +52,9 @@ export const AppContextProvider = ({ children }) => {
                 userList,
                 getAllUsers,
                 pageLoader,
-                setPageLoader
+                setPageLoader,
+                snackBarAlertObject,
+                setSnackBarAlertObject
             }}
         >
             {children}

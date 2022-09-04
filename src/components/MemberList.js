@@ -23,9 +23,9 @@ export default function MemberList({ memberList }) {
                         <ListItem key={value}>
                             <ListItemButton>
                                 <ListItemAvatar>
-                                    <Avatar {...stringAvatar(userFullName)} />
+                                    <Avatar {...stringAvatar(userFullName, 20)} />
                                 </ListItemAvatar>
-                                <ListItemText id={labelId} primary={userFullName} />
+                                <ListItemText id={labelId} primary={userFullName} secondary={user.email} />
                             </ListItemButton>
                         </ListItem>
                     );

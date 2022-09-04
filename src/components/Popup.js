@@ -4,22 +4,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import Slide from '@mui/material/Slide';
-import { styled, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import * as React from 'react';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-    '& .MuiDialogContent-root': {
-        padding: theme.spacing(2)
-    },
-    '& .MuiDialogActions-root': {
-        padding: theme.spacing(1)
-    }
-}));
 
 export default function CustomizedDialogs({ title, children, isOpen, setIsOpen }) {
     const theme = useTheme();
@@ -29,14 +20,14 @@ export default function CustomizedDialogs({ title, children, isOpen, setIsOpen }
     };
 
     return (
-        <BootstrapDialog
+        <Dialog
             onClose={handleClose}
             aria-labelledby="customized-dialog-title"
             open={isOpen}
             fullScreen={fullScreen}
             TransitionComponent={Transition}
         >
-            <DialogTitle sx={{ m: 0, p: 2 }}>
+            <DialogTitle sx={{ m: 0, p: 2, backgroundColor: 'primary.dark', color: 'white' }}>
                 {title}
                 {isOpen ? (
                     <IconButton
@@ -54,6 +45,6 @@ export default function CustomizedDialogs({ title, children, isOpen, setIsOpen }
                 ) : null}
             </DialogTitle>
             <DialogContent dividers>{children}</DialogContent>
-        </BootstrapDialog>
+        </Dialog>
     );
 }

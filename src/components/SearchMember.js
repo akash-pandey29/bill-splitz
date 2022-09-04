@@ -12,6 +12,9 @@ import { alpha, styled } from '@mui/material/styles';
 import { UserAuth } from 'contexts/AuthContext';
 import { AppData } from '../contexts/AppContext';
 import { stringAvatar } from '../utils/avatar';
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -59,6 +62,7 @@ const SearchMember = ({ selectedUsers, setSelectedUsers }) => {
     const { user } = UserAuth();
     const { addGroup, userList, getAllUsers, userDetail } = AppData();
     const [filterUsers, setFilterUsers] = useState([]);
+    // const [searchText, setSearchText] = useState('');
 
     const handleSearchTextChange = (event) => {
         let filterValue = event.target.value.toLowerCase();
@@ -75,8 +79,8 @@ const SearchMember = ({ selectedUsers, setSelectedUsers }) => {
     };
 
     const handleFilteredMemberClick = (value) => {
+        // setSearchText('');
         setSelectedUsers((prev) => [...prev, value]);
-        console.log(selectedUsers);
     };
 
     const handleRemoveSelectedMembers = (uid) => {
@@ -84,7 +88,7 @@ const SearchMember = ({ selectedUsers, setSelectedUsers }) => {
     };
     return (
         <>
-            <Typography variant="h6" component="h6" color="gray" textAlign="center" nowrap sx={{ flexGrow: 1 }}>
+            <Typography variant="h6" component="h6" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
                 Add Member
             </Typography>
             <Search>
@@ -94,34 +98,37 @@ const SearchMember = ({ selectedUsers, setSelectedUsers }) => {
                 <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} onChange={handleSearchTextChange} />
             </Search>
             <Stack direction="row" spacing={1}>
-                {selectedUsers.map((selectedUsr) => {
-                    return (
-                        <Chip
-                            label={selectedUsr.firstName}
-                            onDelete={() => handleRemoveSelectedMembers(selectedUsr.uid)}
-                            disabled={selectedUsr.uid === user.uid}
-                        />
-                    );
-                })}
+                {selectedUsers &&
+                    selectedUsers.map((selectedUsr) => {
+                        return (
+                            <Chip
+                                label={selectedUsr.firstName}
+                                onDelete={() => handleRemoveSelectedMembers(selectedUsr.uid)}
+                                disabled={selectedUsr.uid === user.uid}
+                            />
+                        );
+                    })}
             </Stack>
 
             <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                {filterUsers.map((value) => {
-                    const labelId = `checkbox-list-secondary-label-${value.uid}`;
-                    return (
-                        <ListItem key={value.uid} disablePadding>
-                            <ListItemButton
-                                onClick={() => handleFilteredMemberClick(value)}
-                                disabled={selectedUsers.some((a) => a.uid === value.uid)}
-                            >
-                                <ListItemAvatar>
-                                    <Avatar {...stringAvatar(`${value.firstName} ${value.lastName}`)} />
-                                </ListItemAvatar>
-                                <ListItemText id={labelId} primary={`${value.firstName}`} />
-                            </ListItemButton>
-                        </ListItem>
-                    );
-                })}
+                <Paper elevation={3}>
+                    {filterUsers.map((value) => {
+                        const labelId = `checkbox-list-secondary-label-${value.uid}`;
+                        return (
+                            <ListItem key={value.uid} disablePadding>
+                                <ListItemButton
+                                    onClick={() => handleFilteredMemberClick(value)}
+                                    disabled={selectedUsers && selectedUsers.some((a) => a.uid === value.uid)}
+                                >
+                                    <ListItemAvatar>
+                                        <Avatar {...stringAvatar(`${value.firstName} ${value.lastName}`)} />
+                                    </ListItemAvatar>
+                                    <ListItemText id={labelId} primary={`${value.firstName} ${value.lastName}`} secondary={value.email} />
+                                </ListItemButton>
+                            </ListItem>
+                        );
+                    })}
+                </Paper>
             </List>
         </>
     );
