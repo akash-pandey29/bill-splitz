@@ -32,7 +32,7 @@ const Login = () => {
 
     const handleOnChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
-        console.log(formValues);
+        //console.log(formValues);
     };
 
     const handleSubmit = async (event) => {

@@ -1,7 +1,5 @@
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import GroupsIcon from '@mui/icons-material/Groups';
 import Avatar from '@mui/material/Avatar';
-import AvatarGroup from '@mui/material/AvatarGroup';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
@@ -17,15 +15,13 @@ import AddGroup from 'components/AddGroup';
 import { AppData } from 'contexts/AppContext';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import GroupDataService from 'services/GroupDataService';
-import { stringAvatar } from 'utils/avatar';
-import Popup from './Popup';
-import CreateIcon from '@mui/icons-material/Create';
-import CustomGroupIcon from './CustomGroupIcon';
-import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
-import TransactionSummary from './TransactionSummary';
 import BalanceLogDataService from 'services/BalanceLogDataService';
 import ExpenseDataService from 'services/ExpenseDataService';
+import GroupDataService from 'services/GroupDataService';
+import { stringAvatar } from 'utils/avatar';
+import CustomGroupIcon from './CustomGroupIcon';
+import Popup from './Popup';
+import TransactionSummary from './TransactionSummary';
 
 const GroupList = () => {
     const [groupList, setGroupList] = useState();
@@ -61,7 +57,7 @@ const GroupList = () => {
     const getGroupList = async (uid) => {
         if (uid) {
             const data = await GroupDataService.getGroupListByCurrentUserId(uid);
-            console.log(data.docs);
+            //console.log(data.docs);
             setGroupList(data.docs.map((doc) => ({ ...doc.data(), gid: doc.id })));
         }
     };

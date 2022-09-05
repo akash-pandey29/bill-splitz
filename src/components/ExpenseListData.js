@@ -1,26 +1,18 @@
-import SendIcon from '@mui/icons-material/Send';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import * as React from 'react';
-import { AppData } from 'contexts/AppContext';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
-import ExpenseDataService from 'services/ExpenseDataService';
-import ConfirmDialog from './ConfirmDialog';
-import deleteIconImage from '../assets/images/delete.png';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { AppData } from 'contexts/AppContext';
+import * as React from 'react';
 import { useState } from 'react';
+import ExpenseDataService from 'services/ExpenseDataService';
+import deleteIconImage from '../assets/images/delete.png';
+import ConfirmDialog from './ConfirmDialog';
 
 const ExpenseListData = ({ expenseList, getExpenses }) => {
     const { userList, userDetail } = AppData();

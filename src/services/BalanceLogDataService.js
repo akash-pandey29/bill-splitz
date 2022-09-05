@@ -1,6 +1,6 @@
 import { db } from '../firebase';
 
-import { collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, query, where, writeBatch, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, Timestamp, where, writeBatch } from 'firebase/firestore';
 
 const balanceLogCollectionRef = collection(db, 'balanceLogs');
 

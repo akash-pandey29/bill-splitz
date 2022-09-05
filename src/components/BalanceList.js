@@ -1,26 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import PriceCheckIcon from '@mui/icons-material/PriceCheck';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import CurrencyRupeeSharpIcon from '@mui/icons-material/CurrencyRupeeSharp';
 import { AppData } from 'contexts/AppContext';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import IconButton from '@mui/material/IconButton';
-import CommentIcon from '@mui/icons-material/Comment';
-import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
-import ConfirmDialog from './ConfirmDialog';
-import payIconImage from '../assets/images/pay2.png';
 import { Timestamp } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
 import BalanceLogDataService from 'services/BalanceLogDataService';
-import Grid from '@mui/material/Grid';
+import payIconImage from '../assets/images/pay2.png';
+import ConfirmDialog from './ConfirmDialog';
 
 const itemList = (value, lender, borrower, labelId, userDetail, handleSettleButtonClick) => {
     return (
@@ -29,8 +24,8 @@ const itemList = (value, lender, borrower, labelId, userDetail, handleSettleButt
             key={`${value.lender}-${value.borrower}`}
             secondaryAction={
                 (value.lender === userDetail.uid && value.amount < 0) || value.borrower === userDetail.uid ? (
-                    <Button size="small" variant="contained" endIcon={<CurrencyRupeeIcon />} onClick={() => handleSettleButtonClick(value)}>
-                        Send
+                    <Button size="small" variant="contained" onClick={() => handleSettleButtonClick(value)}>
+                        <PriceCheckIcon />
                     </Button>
                 ) : (
                     ''
@@ -69,6 +64,7 @@ export default function BalanceList({ balanceLogList, getBalanceLogs }) {
     const [balanceList, setBalanceList] = useState([]);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [newBalanceLogObject, setNewBalanceLogObject] = useState();
+    const [expanded, setExpanded] = React.useState('panel1');
     const confirmDialogObj = {
         confirmDialogHeader: 'Do you want to settle this Bill??',
         confirmDialogMessage:
@@ -77,6 +73,9 @@ export default function BalanceList({ balanceLogList, getBalanceLogs }) {
         type: 'info'
     };
 
+    const handleAccordianChange = (panel) => (event, isExpanded) => {
+        setExpanded(isExpanded ? panel : false);
+    };
     useEffect(() => {
         createBalanceList();
     }, [balanceLogList]);
@@ -91,12 +90,12 @@ export default function BalanceList({ balanceLogList, getBalanceLogs }) {
             amount: Number(Math.abs(balanceListObject.amount).toFixed(2)),
             createdDate: Timestamp.fromDate(new Date())
         });
-        console.log(newBalanceLogObject);
+        //console.log(newBalanceLogObject);
     };
     const handleSubmitConfirmDialog = async () => {
         try {
             await BalanceLogDataService.addBalanceLog(newBalanceLogObject);
-            console.log('Balance Log Added Successfully');
+            //console.log('Balance Log Added Successfully');
             getBalanceLogs(newBalanceLogObject.groupId);
             setSnackBarAlertObject({
                 ...snackBarAlertObject,
@@ -107,7 +106,7 @@ export default function BalanceList({ balanceLogList, getBalanceLogs }) {
             setOpenConfirmDialog(false);
         } catch (err) {
             setError(err);
-            console.log('Balance Log Add Error: ', err.message);
+            //console.log('Balance Log Add Error: ', err.message);
         }
     };
 
@@ -136,70 +135,90 @@ export default function BalanceList({ balanceLogList, getBalanceLogs }) {
     };
     return (
         <>
-            <Typography variant="h6" component="span" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
-                Your
-            </Typography>
-            <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                {balanceList.length > 0 &&
-                userList.length > 0 &&
-                userDetail.uid &&
-                balanceList.filter(
-                    (a) => Math.floor(a.amount) !== 0 && a.amount !== NaN && (a.lender === userDetail.uid || a.borrower === userDetail.uid)
-                ).length > 0 ? (
-                    balanceList
-                        .filter(
+            <Accordion expanded={expanded === 'panel1'} onChange={handleAccordianChange('panel1')}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+                    <Typography variant="h6" component="span" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
+                        Your
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                        {balanceList.length > 0 &&
+                        userList.length > 0 &&
+                        userDetail.uid &&
+                        balanceList.filter(
                             (a) =>
                                 Math.floor(a.amount) !== 0 &&
                                 a.amount !== NaN &&
                                 (a.lender === userDetail.uid || a.borrower === userDetail.uid)
-                        )
-                        .map((value) => {
-                            const labelId = value;
-                            const lender = userList.filter((a) => a.uid === value.lender)[0];
-                            const borrower = userList.filter((a) => a.uid === value.borrower)[0];
-                            return itemList(value, lender, borrower, labelId, userDetail, handleSettleButtonClick);
-                        })
-                ) : (
-                    <Grid sx={{ width: '100%', bgcolor: 'background.paper', p: 2 }}>
-                        <Typography variant="subtitle1" component="h6" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
-                            No Balance to settle...
-                        </Typography>
-                    </Grid>
-                )}
-            </List>
+                        ).length > 0 ? (
+                            balanceList
+                                .filter(
+                                    (a) =>
+                                        Math.floor(a.amount) !== 0 &&
+                                        a.amount !== NaN &&
+                                        (a.lender === userDetail.uid || a.borrower === userDetail.uid)
+                                )
+                                .map((value) => {
+                                    const labelId = value;
+                                    const lender = userList.filter((a) => a.uid === value.lender)[0];
+                                    const borrower = userList.filter((a) => a.uid === value.borrower)[0];
+                                    return itemList(value, lender, borrower, labelId, userDetail, handleSettleButtonClick);
+                                })
+                        ) : (
+                            <Grid sx={{ width: '100%', bgcolor: 'background.paper', p: 2 }}>
+                                <Typography variant="subtitle1" component="h6" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
+                                    No Balance to settle...
+                                </Typography>
+                            </Grid>
+                        )}
+                    </List>
+                </AccordionDetails>
+            </Accordion>
 
-            <Divider variant="middle" />
-            <Typography variant="h6" component="span" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
-                Other's
-            </Typography>
-            <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                {balanceList.length > 0 &&
-                userList.length > 0 &&
-                userDetail.uid &&
-                balanceList.filter(
-                    (a) => !(a.lender === userDetail.uid || a.borrower === userDetail.uid) && Math.floor(a.amount) !== 0 && a.amount !== NaN
-                ).length > 0 ? (
-                    balanceList
-                        .filter(
+            <Accordion expanded={expanded === 'panel2'} onChange={handleAccordianChange('panel2')}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
+                    <Typography variant="h6" component="span" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
+                        Other's
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                        {balanceList.length > 0 &&
+                        userList.length > 0 &&
+                        userDetail.uid &&
+                        balanceList.filter(
                             (a) =>
                                 !(a.lender === userDetail.uid || a.borrower === userDetail.uid) &&
                                 Math.floor(a.amount) !== 0 &&
                                 a.amount !== NaN
-                        )
-                        .map((value) => {
-                            const labelId = value;
-                            const lender = userList.filter((a) => a.uid === value.lender)[0];
-                            const borrower = userList.filter((a) => a.uid === value.borrower)[0];
-                            return itemList(value, lender, borrower, labelId, userDetail);
-                        })
-                ) : (
-                    <Grid sx={{ width: '100%', bgcolor: 'background.paper', p: 2 }}>
-                        <Typography variant="subtitle1" component="h6" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
-                            No Balance to settle...
-                        </Typography>
-                    </Grid>
-                )}
-            </List>
+                        ).length > 0 ? (
+                            balanceList
+                                .filter(
+                                    (a) =>
+                                        !(a.lender === userDetail.uid || a.borrower === userDetail.uid) &&
+                                        Math.floor(a.amount) !== 0 &&
+                                        a.amount !== NaN
+                                )
+                                .map((value) => {
+                                    const labelId = value;
+                                    const lender = userList.filter((a) => a.uid === value.lender)[0];
+                                    const borrower = userList.filter((a) => a.uid === value.borrower)[0];
+                                    return itemList(value, lender, borrower, labelId, userDetail);
+                                })
+                        ) : (
+                            <Grid sx={{ width: '100%', bgcolor: 'background.paper', p: 2 }}>
+                                <Typography variant="subtitle1" component="h6" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
+                                    No Balance to settle...
+                                </Typography>
+                            </Grid>
+                        )}
+                    </List>
+                </AccordionDetails>
+            </Accordion>
+
+            <Divider variant="middle" />
+
             <ConfirmDialog
                 confirmDialogObj={confirmDialogObj}
                 openConfirmDialog={openConfirmDialog}

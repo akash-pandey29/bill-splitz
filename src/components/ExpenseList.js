@@ -1,32 +1,29 @@
-import AddIcon from '@mui/icons-material/Add';
 import ArrowBackIosSharpIcon from '@mui/icons-material/ArrowBackIosSharp';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import DialogActions from '@mui/material/DialogActions';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import AddGroup from 'components/AddGroup';
 import { AppData } from 'contexts/AppContext';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import ExpenseDataService from 'services/ExpenseDataService';
-import ExpenseListData from './ExpenseListData';
-import { Link, useNavigate } from 'react-router-dom';
-import AddExpense from './AddExpense';
-import MemberList from './MemberList';
-import GroupDataService from 'services/GroupDataService';
-import BalanceList from './BalanceList';
-import Popup from './Popup';
+import { useNavigate, useParams } from 'react-router-dom';
 import BalanceLogDataService from 'services/BalanceLogDataService';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import SnackBarAlert from './SnackBarAlert';
-import ConfirmDialog from './ConfirmDialog';
+import ExpenseDataService from 'services/ExpenseDataService';
+import GroupDataService from 'services/GroupDataService';
 import deleteGroupIconImage from '../assets/images/deleteGroup.png';
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import AddExpense from './AddExpense';
+import BalanceList from './BalanceList';
+import ConfirmDialog from './ConfirmDialog';
+import ExpenseListData from './ExpenseListData';
+import MemberList from './MemberList';
+import Popup from './Popup';
 import SearchMember from './SearchMember';
-import DialogActions from '@mui/material/DialogActions';
+import SnackBarAlert from './SnackBarAlert';
 
 const ExpenseList = () => {
     const params = useParams();
@@ -68,7 +65,7 @@ const ExpenseList = () => {
     const getExpenses = async (gid) => {
         if (gid) {
             const data = await ExpenseDataService.getAllExpensesByGroupId(gid);
-            console.log(data.docs);
+            //console.log(data.docs);
             setExpenseList(data.docs.map((doc) => ({ ...doc.data(), eid: doc.id })));
         }
     };

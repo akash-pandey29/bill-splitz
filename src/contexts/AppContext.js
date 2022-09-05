@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, query, Timestamp, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query } from 'firebase/firestore';
 import { createContext, useContext, useState } from 'react';
 import { db } from '../firebase';
 
@@ -31,10 +31,10 @@ export const AppContextProvider = ({ children }) => {
             if (docSnap.exists()) {
                 let tempUserDetail = { uid: uid, ...docSnap.data() };
                 setUserDetail(tempUserDetail);
-                //console.log('Document data:', tempUserDetail);
+                ////console.log('Document data:', tempUserDetail);
             } else {
                 // doc.data() will be undefined in this case
-                console.log('No such document!');
+                //console.log('No such document!');
             }
             setPageLoader((prev) => prev - 1);
         }

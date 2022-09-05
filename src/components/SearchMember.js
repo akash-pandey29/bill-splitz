@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { Avatar, Stack, Typography } from '@mui/material';
 import Chip from '@mui/material/Chip';
@@ -8,13 +7,12 @@ import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
 import { alpha, styled } from '@mui/material/styles';
 import { UserAuth } from 'contexts/AuthContext';
+import { useState } from 'react';
 import { AppData } from '../contexts/AppContext';
 import { stringAvatar } from '../utils/avatar';
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',

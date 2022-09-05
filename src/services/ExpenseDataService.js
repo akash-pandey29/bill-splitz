@@ -1,8 +1,8 @@
 import { db } from '../firebase';
 
-import { collection, getDocs, getDoc, addDoc, updateDoc, deleteDoc, doc, query, where, runTransaction } from 'firebase/firestore';
-import GroupDataService from './GroupDataService';
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, runTransaction, updateDoc, where } from 'firebase/firestore';
 import BalanceLogDataService from './BalanceLogDataService';
+import GroupDataService from './GroupDataService';
 
 const expenseCollectionRef = collection(db, 'expenses');
 
@@ -47,7 +47,7 @@ class ExpenseDataService {
                 }
                 let newExpenseDocRef = doc(expenseCollectionRef);
                 const addExpenseResponse = await transaction.set(newExpenseDocRef, newExpense);
-                console.log('Trasaction 1--Expense Added Successfully');
+                //console.log('Trasaction 1--Expense Added Successfully');
                 const newGroupObject = GroupDataService.createUpdatedGroupObject(
                     groupDoc.data(),
                     newExpense.amount,
@@ -56,7 +56,7 @@ class ExpenseDataService {
                     newExpense.paidBy
                 );
                 await transaction.update(groupDocRef, newGroupObject);
-                console.log('Trasaction 2--Group Updated Successfully');
+                //console.log('Trasaction 2--Group Updated Successfully');
 
                 const newBalanceLogs = BalanceLogDataService.getNewBalanceLogObjectList(
                     newExpense.paidBy,
@@ -70,9 +70,9 @@ class ExpenseDataService {
                     let newBalanceLogRef = doc(balanceLogCollectionRef);
                     await transaction.set(newBalanceLogRef, balanceLog);
                 });
-                console.log('Trasaction 3--Balance Logs Added Successfully');
+                //console.log('Trasaction 3--Balance Logs Added Successfully');
             });
-            console.log('All Transactions Completed Successfully');
+            //console.log('All Transactions Completed Successfully');
         } catch (e) {
             console.error(e);
         }
@@ -89,7 +89,7 @@ class ExpenseDataService {
                 }
                 const expenseDoc = doc(db, 'expenses', deleteExpenseObj.eid);
                 await transaction.delete(expenseDoc);
-                console.log('Trasaction 1--Expense Deleted Successfully');
+                //console.log('Trasaction 1--Expense Deleted Successfully');
                 const newGroupObject = GroupDataService.createUpdatedGroupObject(
                     groupDoc.data(),
                     -deleteExpenseObj.amount,
@@ -98,7 +98,7 @@ class ExpenseDataService {
                     deleteExpenseObj.paidBy
                 );
                 await transaction.update(groupDocRef, newGroupObject);
-                console.log('Trasaction 2--Group Updated Successfully');
+                //console.log('Trasaction 2--Group Updated Successfully');
 
                 const balanceLogCollectionRef = collection(db, 'balanceLogs');
                 const queryBalanceLogByExpenseId = query(balanceLogCollectionRef, where('expenseId', '==', deleteExpenseObj.eid));
@@ -107,9 +107,9 @@ class ExpenseDataService {
                     const balanceLogDoc = doc(db, 'balanceLogs', balanceLog.id);
                     await transaction.delete(balanceLogDoc);
                 });
-                console.log('Trasaction 3--Balance Logs Deleted Successfully');
+                //console.log('Trasaction 3--Balance Logs Deleted Successfully');
             });
-            console.log('All Transactions Completed Successfully');
+            //console.log('All Transactions Completed Successfully');
         } catch (e) {
             console.error(e);
         }

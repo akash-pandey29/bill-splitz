@@ -2,18 +2,18 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import AppBarPanel from 'components/AppBarPanel';
 import Feature from 'components/Feature';
 import HeaderTextAnimation from 'components/HeaderTextAnimation';
 import { useNavigate } from 'react-router-dom';
+import { UserAuth } from '../contexts/AuthContext';
 
 const titleItems = ['on Trips', 'with Flatmates', 'with your Partner', 'in Hotels', 'with Anyone'];
 
 export default function Home() {
+    const { user } = UserAuth();
     const navigate = useNavigate();
     return (
         <>
@@ -38,7 +38,7 @@ export default function Home() {
                             today with your friends
                         </Typography>
                         <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
-                            <Button variant="contained" onClick={() => navigate('/signup')}>
+                            <Button variant="contained" onClick={() => (user !== null ? navigate('/userDashboard') : navigate('/signup'))}>
                                 Get Started
                             </Button>
                         </Stack>

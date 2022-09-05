@@ -58,7 +58,7 @@ class GroupDataService {
                     throw 'Group does not exist!';
                 }
                 await transaction.delete(groupDocRef);
-                console.log('Trasaction 1--Group Deleted Successfully');
+                //console.log('Trasaction 1--Group Deleted Successfully');
 
                 const expenseCollectionRef = collection(db, 'expenses');
                 const queryexpenseByGroupId = query(expenseCollectionRef, where('groupId', '==', groupId));
@@ -67,7 +67,7 @@ class GroupDataService {
                     const expenseDoc = doc(db, 'expenses', expense.id);
                     await transaction.delete(expenseDoc);
                 });
-                console.log('Trasaction 2--Expenses Deleted Successfully');
+                //console.log('Trasaction 2--Expenses Deleted Successfully');
 
                 const balanceLogCollectionRef = collection(db, 'balanceLogs');
                 const queryBalanceLogByGroupId = query(balanceLogCollectionRef, where('groupId', '==', groupId));
@@ -76,9 +76,9 @@ class GroupDataService {
                     const balanceLogDoc = doc(db, 'balanceLogs', balanceLog.id);
                     await transaction.delete(balanceLogDoc);
                 });
-                console.log('Trasaction 3--Balance Logs Deleted Successfully');
+                //console.log('Trasaction 3--Balance Logs Deleted Successfully');
             });
-            console.log('All Transactions Completed Successfully');
+            //console.log('All Transactions Completed Successfully');
         } catch (e) {
             console.error(e);
         }
@@ -100,7 +100,7 @@ class GroupDataService {
                     membersObject: [...existingGroupObject.membersObject, ...newGroupMembersObject]
                 };
                 await transaction.update(groupDocRef, updatedGroupObject);
-                console.log('New Members added to the group');
+                //console.log('New Members added to the group');
             });
         } catch (e) {
             console.error(e.message);

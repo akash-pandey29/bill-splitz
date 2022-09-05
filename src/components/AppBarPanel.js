@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import MenuIcon from '@mui/icons-material/Menu';
 import AppBar from '@mui/material/AppBar';
+import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
+import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import MenuIcon from '@mui/icons-material/Menu';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import MuiAppBar from '@mui/material/AppBar';
-import Avatar from '@mui/material/Avatar';
-import Stack from '@mui/material/Stack';
-import { stringAvatar } from 'utils/avatar';
-import { useNavigate } from 'react-router-dom';
-import { UserAuth } from '../contexts/AuthContext';
-import Grid from '@mui/material/Grid';
 import { AppData } from 'contexts/AppContext';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { stringAvatar } from 'utils/avatar';
+import { UserAuth } from '../contexts/AuthContext';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import LoginIcon from '@mui/icons-material/Login';
+import GridViewIcon from '@mui/icons-material/GridView';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const drawerWidth = 240;
 const navItems = ['Home', 'About', 'Contact'];
@@ -36,7 +37,7 @@ function AppBarPanel(props) {
     const { userDetail } = AppData();
     const [userName, setUserName] = useState('Akash Pandey');
     useEffect(() => {
-        console.log(userDetail.firstName);
+        //console.log(userDetail.firstName);
         setUserName(`${userDetail.firstName} ${userDetail.lastName}`);
     }, [userDetail]);
 
@@ -60,7 +61,7 @@ function AppBarPanel(props) {
             await logout();
             navigate('/');
         } catch (e) {
-            console.log(e.message);
+            //console.log(e.message);
         }
     };
     const handleLogin = () => {
@@ -101,12 +102,18 @@ function AppBarPanel(props) {
                     <List>
                         <ListItem disablePadding>
                             <ListItemButton sx={{ textAlign: 'center' }}>
-                                <ListItemText primary="Groups" onClick={handleOpenGroups} />
+                                <ListItemText primary="Dashboard" onClick={handleOpenGroups} />
+                                <ListItemIcon>
+                                    <GridViewIcon />
+                                </ListItemIcon>
                             </ListItemButton>
                         </ListItem>
                         <ListItem disablePadding>
                             <ListItemButton sx={{ textAlign: 'center' }}>
                                 <ListItemText primary="Logout" onClick={handleLogout} />
+                                <ListItemIcon>
+                                    <LogoutIcon />
+                                </ListItemIcon>
                             </ListItemButton>
                         </ListItem>
                     </List>
@@ -158,6 +165,15 @@ function AppBarPanel(props) {
                         <Grid sx={{ flexGrow: 1 }} justifyContent="flex-end" style={{ display: 'flex' }}>
                             {user !== null ? (
                                 <>
+                                    <Button
+                                        onClick={() => navigate('/userDashboard')}
+                                        endIcon={<GridViewIcon />}
+                                        variant="outlined"
+                                        color="inherit"
+                                        sx={{ my: 1, mx: 1.5 }}
+                                    >
+                                        Go To Dashboard
+                                    </Button>
                                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                         <Avatar {...stringAvatar(userName, 20)} />
                                         <Typography component="span" variant="subtitle1" color="white" sx={{ flexGrow: 1 }}>
@@ -181,19 +197,29 @@ function AppBarPanel(props) {
                                         onClose={handleCloseUserMenu}
                                     >
                                         <MenuItem onClick={handleLogout}>
-                                            <Typography textAlign="center">Logout</Typography>
+                                            <Typography textAlign="center" sx={{ mr: 1 }}>
+                                                Logout
+                                            </Typography>
+                                            <LogoutIcon />
                                         </MenuItem>
                                     </Menu>
                                 </>
                             ) : (
                                 <>
-                                    <Button onClick={() => navigate('/login')} variant="outlined" color="inherit" sx={{ my: 1, mx: 1.5 }}>
+                                    <Button
+                                        onClick={() => navigate('/login')}
+                                        endIcon={<LoginIcon />}
+                                        variant="outlined"
+                                        color="inherit"
+                                        sx={{ my: 1, mx: 1.5 }}
+                                    >
                                         Login
                                     </Button>
                                     <Button
                                         onClick={() => navigate('/signup')}
                                         variant="contained"
                                         color="secondary"
+                                        endIcon={<PersonAddAltIcon />}
                                         sx={{ my: 1, mx: 1.5 }}
                                     >
                                         Sign Up

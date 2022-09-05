@@ -1,9 +1,9 @@
-import GroupsIcon from '@mui/icons-material/Groups';
-import PaidIcon from '@mui/icons-material/Paid';
 import AddchartIcon from '@mui/icons-material/Addchart';
+import GroupsIcon from '@mui/icons-material/Groups';
+import MobileFriendlyIcon from '@mui/icons-material/MobileFriendly';
+import PaidIcon from '@mui/icons-material/Paid';
 import PriceCheckIcon from '@mui/icons-material/PriceCheck';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import MobileFriendlyIcon from '@mui/icons-material/MobileFriendly';
 
 export const FeatureIcons = ({ featureIndex }) => {
     switch (featureIndex) {

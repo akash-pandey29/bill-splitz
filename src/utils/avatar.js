@@ -1,4 +1,3 @@
-import React from 'react';
 const stringToColor = (string) => {
     let hash = 0;
     let i;

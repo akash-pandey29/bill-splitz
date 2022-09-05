@@ -8,11 +8,10 @@ import { AppData } from 'contexts/AppContext';
 import { UserAuth } from 'contexts/AuthContext';
 import Home from 'pages/Home';
 import Login from 'pages/Login';
-import NotFound from 'pages/NotFound';
 import SignUp from 'pages/SignUp';
 import UserDashboard from 'pages/UserDashboard';
 import { useEffect } from 'react';
-import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -28,8 +27,8 @@ function App() {
 
     //load all Initial Data
     useEffect(() => {
-        console.log('logging user Value');
-        console.log(user);
+        //console.log('logging user Value');
+        //console.log(user);
         if (user && user.uid) {
             //navigate('userDashboard');
             loadInitialData(user.uid);

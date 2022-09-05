@@ -1,8 +1,8 @@
-import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
-import Box from '@mui/material/Box';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 const Footer = () => {
     return (

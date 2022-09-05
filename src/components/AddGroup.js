@@ -52,7 +52,7 @@ const AddGroup = ({ setIsOpen, setIsNewGroupAdded }) => {
                 totalGroupExpense: 0,
                 groupType: formValues.groupType
             };
-            console.log(newGroup);
+            //console.log(newGroup);
 
             try {
                 if (groupId !== undefined && groupId !== '') {
@@ -60,7 +60,7 @@ const AddGroup = ({ setIsOpen, setIsNewGroupAdded }) => {
                     setBookId('');
                 } else {
                     await GroupDataService.addGroup(newGroup);
-                    console.log('Group Added Successfully');
+                    //console.log('Group Added Successfully');
                     setIsNewGroupAdded(true);
                     setIsOpen(false);
                 }
@@ -72,7 +72,7 @@ const AddGroup = ({ setIsOpen, setIsNewGroupAdded }) => {
 
     const handleOnChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
-        console.log(formValues);
+        //console.log(formValues);
     };
 
     const checkValidation = () => {

@@ -1,17 +1,10 @@
-import React from 'react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import CssBaseline from '@mui/material/CssBaseline';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import AppBarPanel from 'components/AppBarPanel';
-import HeaderTextAnimation from 'components/HeaderTextAnimation';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import { FeatureIcons, featureList } from 'utils/homePageData';
 
 const bull = (

@@ -1,10 +1,9 @@
-import React from 'react';
-import FlightIcon from '@mui/icons-material/Flight';
-import MapsHomeWorkIcon from '@mui/icons-material/MapsHomeWork';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import CelebrationIcon from '@mui/icons-material/Celebration';
 import ConstructionIcon from '@mui/icons-material/Construction';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FlightIcon from '@mui/icons-material/Flight';
 import GroupsIcon from '@mui/icons-material/Groups';
+import MapsHomeWorkIcon from '@mui/icons-material/MapsHomeWork';
 
 const CustomGroupIcon = ({ groupType }) => {
     switch (groupType) {
