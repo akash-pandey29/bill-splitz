@@ -1,64 +1,73 @@
-import { Box, Container, Grid, Hidden, Paper } from '@mui/material';
 import React from 'react';
-// import { RenderSectionHeading } from '../common/commonComponent';
-import AcUnitIcon from '@mui/icons-material/AcUnit';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import ScrollAnimation from 'react-animate-on-scroll';
-import { Card, CardContent, CardHeader } from '../../node_modules/@mui/material/index';
+import AppBarPanel from 'components/AppBarPanel';
+import HeaderTextAnimation from 'components/HeaderTextAnimation';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import { FeatureIcons, featureList } from 'utils/homePageData';
 
-export default function Feature() {
-    const cardMediaData = [
-        {
-            title: ' Web Development',
-            description: 'Lorem ipsum dolor sit amet Consectetur adipisicing elit.',
-            icon: <AcUnitIcon />
-        },
-        {
-            title: 'Graphic Design',
-            description: 'Lorem ipsum dolor sit amet Consectetur adipisicing elit.',
-            icon: <AcUnitIcon />
-        },
-        {
-            title: 'Mobile Apps',
-            description: 'Lorem ipsum dolor sit amet Consectetur adipisicing elit.',
-            icon: <AcUnitIcon />
-        },
-        {
-            title: 'Marketing',
-            description: 'Lorem ipsum dolor sit amet Consectetur adipisicing elit.',
-            icon: <AcUnitIcon />
-        }
-    ];
+const bull = (
+    <Box component="span" sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}>
+        •
+    </Box>
+);
+
+const Feature = () => {
     return (
-        <Box id="About">
-            <ScrollAnimation animateIn="fadeIn">
-                <Container>
-                    <Grid container spacing={1}>
-                        <Grid item sm={5}>
-                            <Paper elevation={3}></Paper>
+        <Box sx={{ flexGrow: 1, p: 2, mt: 10, backgroundColor: 'primary.light' }}>
+            <Stack sx={{ pt: 4 }} direction="column" spacing={2}>
+                <Typography component="h3" sx={{}} variant="h4" align="left" color="#99b6bf" gutterBottom>
+                    Our Features
+                </Typography>
+                <Grid container spacing={{ xs: 1, md: 1 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                    {featureList.map((feature, index) => (
+                        <Grid item xs={12} sm={4} md={4} key={index}>
+                            <Card sx={{ backgroundColor: 'primary.dark', p: 3 }}>
+                                <CardContent>
+                                    <Stack sx={{ width: '100%', textAlign: 'right' }} direction="row" spacing={2}>
+                                        <Paper
+                                            sx={{
+                                                width: 60,
+                                                height: 60,
+                                                backgroundColor: 'primary.main',
+                                                textAlign: 'center',
+                                                color: '#7e72c4'
+                                            }}
+                                            elevation={3}
+                                        >
+                                            <FeatureIcons featureIndex={index} />
+                                        </Paper>
+                                        <Typography
+                                            component="h6"
+                                            sx={{ color: '#99b6bf' }}
+                                            variant="h6"
+                                            align="right"
+                                            color="white"
+                                            gutterBottom
+                                        >
+                                            {feature.title}
+                                        </Typography>
+                                    </Stack>
+
+                                    <Typography variant="subtitle1" sx={{ color: '#99b6bf' }} component="div">
+                                        {feature.description}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
                         </Grid>
-                        <Grid item xs={12} sm={7}>
-                            <Typography variant="h4" color="white" sx={{ flexGrow: 1 }}>
-                                Features
-                            </Typography>
-                            <Typography variant="h6" color="white" sx={{ flexGrow: 1 }}>
-                                Hello I'm Himanshu lal
-                            </Typography>
-                            <br />
-                            <Grid container>
-                                {cardMediaData.map((item, i) => (
-                                    <Grid item xs={12} sm={6} key={i}>
-                                        <Card>
-                                            <CardHeader title={cardMediaData.title} />
-                                            <CardContent>{cardMediaData.description}</CardContent>
-                                        </Card>
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Container>
-            </ScrollAnimation>
+                    ))}
+                </Grid>
+            </Stack>
         </Box>
     );
-}
+};
+
+export default Feature;

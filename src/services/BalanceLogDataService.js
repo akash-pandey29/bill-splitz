@@ -32,6 +32,14 @@ class BalanceLogDataService {
         const q = query(balanceLogCollectionRef, where('groupId', '==', gid));
         return getDocs(q);
     };
+    getAllLenderBalanceLogsByUserId = (uid) => {
+        const qLender = query(balanceLogCollectionRef, where('lender', '==', uid));
+        return getDocs(qLender);
+    };
+    getAllBorrowerBalanceLogsByUserId = async (uid) => {
+        const qBorrower = query(balanceLogCollectionRef, where('expenseId', '==', ''), where('borrower', '==', uid));
+        return getDocs(qBorrower);
+    };
 
     getBalanceLog = (id) => {
         const balanceLogDoc = doc(db, 'balanceLogs', id);

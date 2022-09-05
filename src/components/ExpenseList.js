@@ -26,6 +26,7 @@ import ConfirmDialog from './ConfirmDialog';
 import deleteGroupIconImage from '../assets/images/deleteGroup.png';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import SearchMember from './SearchMember';
+import DialogActions from '@mui/material/DialogActions';
 
 const ExpenseList = () => {
     const params = useParams();
@@ -75,8 +76,8 @@ const ExpenseList = () => {
     const getCurrentGroup = async (gid) => {
         if (gid) {
             const snapDoc = await GroupDataService.getGroup(gid);
+            if (!snapDoc.data()) navigate('/userDashboard');
             setCurrentGroup(snapDoc.data());
-            setSelectedUsers(snapDoc.data().memberIds);
         }
     };
 
@@ -101,6 +102,17 @@ const ExpenseList = () => {
         navigate(-1);
     };
 
+    const handleAddMember = async () => {
+        if (selectedUsers.length > 0) {
+            await GroupDataService.updateGroupMemberList(
+                groupId,
+                selectedUsers.map((u) => u.uid)
+            );
+            getCurrentGroup(groupId);
+        }
+        setIsAddMemberOpen(false);
+    };
+
     return (
         <>
             <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
@@ -115,7 +127,12 @@ const ExpenseList = () => {
                             }}
                         >
                             <Stack direction="row" spacing={2}>
-                                <IconButton color="primary" aria-label="back-to-group-list" onClick={() => handleBackButtonClick()}>
+                                <IconButton
+                                    color="primary"
+                                    size="small"
+                                    aria-label="back-to-group-list"
+                                    onClick={() => handleBackButtonClick()}
+                                >
                                     <ArrowBackIosSharpIcon />
                                 </IconButton>
                                 <Typography variant="h5" component="span" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
@@ -124,20 +141,27 @@ const ExpenseList = () => {
                                 <Button variant="contained" size="small" onClick={() => setIsOpen(true)}>
                                     <PlaylistAddIcon />
                                 </Button>
-                                {/* <AddExpense isOpen={isOpen} setIsOpen={setIsOpen} /> */}
-                                <Popup title="Add Expense" isOpen={isOpen} setIsOpen={setIsOpen}>
-                                    <AddExpense
-                                        memberList={currentGroup ? currentGroup.memberIds : []}
-                                        currentGroupId={groupId}
-                                        setIsOpen={setIsOpen}
-                                        getExpenses={getExpenses}
-                                        currentGroup={currentGroup}
-                                        getBalanceLogs={getBalanceLogs}
-                                    />
-                                </Popup>
                             </Stack>
-                            <ExpenseListData expenseList={expenseList} getExpenses={getExpenses} />
+                            {expenseList && expenseList.length > 0 ? (
+                                <ExpenseListData expenseList={expenseList} getExpenses={getExpenses} />
+                            ) : (
+                                <Grid sx={{ width: '100%', bgcolor: 'background.paper', mt: 5, p: 2 }}>
+                                    <Typography variant="subtitle1" component="h6" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
+                                        No Expense Record Has been added yet...
+                                    </Typography>
+                                </Grid>
+                            )}
                         </Paper>
+                        <Popup title="Add Expense" isOpen={isOpen} setIsOpen={setIsOpen}>
+                            <AddExpense
+                                memberList={currentGroup ? currentGroup.memberIds : []}
+                                currentGroupId={groupId}
+                                setIsOpen={setIsOpen}
+                                getExpenses={getExpenses}
+                                currentGroup={currentGroup}
+                                getBalanceLogs={getBalanceLogs}
+                            />
+                        </Popup>
                     </Grid>
                     <Grid item xs={12} md={5} lg={4}>
                         <Paper
@@ -157,9 +181,17 @@ const ExpenseList = () => {
                                         <PersonAddAlt1Icon />
                                     </Button>
                                 </Stack>
-                                <Popup title="Add Expense" isOpen={isAddMemberOpen} setIsOpen={setIsAddMemberOpen}>
-                                    <SearchMember selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers} />
-                                    <Button>Save</Button>
+                                <Popup title="Add Member" isOpen={isAddMemberOpen} setIsOpen={setIsAddMemberOpen}>
+                                    <SearchMember
+                                        selectedUsers={selectedUsers}
+                                        setSelectedUsers={setSelectedUsers}
+                                        existingMemberList={currentGroup ? currentGroup.memberIds : []}
+                                    />
+                                    <DialogActions>
+                                        <Button varient="contained" onClick={handleAddMember}>
+                                            Add
+                                        </Button>
+                                    </DialogActions>
                                 </Popup>
                                 <MemberList memberList={currentGroup ? currentGroup.memberIds : []} />
                             </Stack>

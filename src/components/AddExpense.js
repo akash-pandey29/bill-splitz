@@ -192,7 +192,7 @@ const AddExpense = ({ isOpen, setIsOpen, setIsNewGroupAdded, memberList, current
                                                 }
                                                 disablePadding
                                             >
-                                                <ListItemButton>
+                                                <ListItemButton onClick={handleToggle(labelId)}>
                                                     <ListItemText id={labelId} primary={userDetail.uid === value ? 'You' : userFullName} />
                                                 </ListItemButton>
                                             </ListItem>

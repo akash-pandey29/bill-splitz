@@ -26,6 +26,11 @@ class ExpenseDataService {
         return getDocs(q);
     };
 
+    getAllExpensesByPayerId = (uid) => {
+        const q = query(expenseCollectionRef, where('paidBy', '==', uid));
+        return getDocs(q);
+    };
+
     getExpense = (id) => {
         const expenseDoc = doc(db, 'expense', id);
         return getDoc(expenseDoc);

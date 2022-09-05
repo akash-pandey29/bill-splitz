@@ -83,6 +83,29 @@ class GroupDataService {
             console.error(e);
         }
     };
+
+    updateGroupMemberList = async (groupId, newMemberList) => {
+        const groupDocRef = doc(db, 'groups', groupId);
+        try {
+            await runTransaction(db, async (transaction) => {
+                const groupDoc = await transaction.get(groupDocRef);
+                if (!groupDoc.exists()) {
+                    throw 'Group does not exist!';
+                }
+                const newGroupMembersObject = newMemberList.map((u) => ({ uid: u, userExpense: 0 }));
+                const existingGroupObject = groupDoc.data();
+                const updatedGroupObject = {
+                    ...existingGroupObject,
+                    memberIds: [...existingGroupObject.memberIds, ...newMemberList],
+                    membersObject: [...existingGroupObject.membersObject, ...newGroupMembersObject]
+                };
+                await transaction.update(groupDocRef, updatedGroupObject);
+                console.log('New Members added to the group');
+            });
+        } catch (e) {
+            console.error(e.message);
+        }
+    };
 }
 
 export default new GroupDataService();

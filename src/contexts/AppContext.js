@@ -18,11 +18,7 @@ export const AppContextProvider = ({ children }) => {
         setPageLoader((prev) => prev + 1);
         const q = query(collection(db, 'users'));
         const querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-            let tempUserDetail = { uid: doc.id, ...doc.data() };
-            setUserList((prev) => [...prev, tempUserDetail]);
-            //console.log(doc.id, ' => ', doc.data());
-        });
+        setUserList(querySnapshot.docs.map((doc) => ({ ...doc.data(), uid: doc.id })));
         setPageLoader((prev) => prev - 1);
     };
 

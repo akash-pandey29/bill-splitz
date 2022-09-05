@@ -20,6 +20,7 @@ import ConfirmDialog from './ConfirmDialog';
 import payIconImage from '../assets/images/pay2.png';
 import { Timestamp } from 'firebase/firestore';
 import BalanceLogDataService from 'services/BalanceLogDataService';
+import Grid from '@mui/material/Grid';
 
 const itemList = (value, lender, borrower, labelId, userDetail, handleSettleButtonClick) => {
     return (
@@ -87,7 +88,7 @@ export default function BalanceList({ balanceLogList, getBalanceLogs }) {
             expenseId: '',
             lender: userDetail.uid,
             borrower: userDetail.uid === balanceListObject.lender ? balanceListObject.borrower : balanceListObject.lender,
-            amount: Number(Math.abs(balanceListObject.amount)).toFixed(2),
+            amount: Number(Math.abs(balanceListObject.amount).toFixed(2)),
             createdDate: Timestamp.fromDate(new Date())
         });
         console.log(newBalanceLogObject);
@@ -123,7 +124,7 @@ export default function BalanceList({ balanceLogList, getBalanceLogs }) {
                     tempBalanceList = tempBalanceList.filter((x) => x !== isBalanceExist);
                     isBalanceExist.amount =
                         isBalanceExist.lender === lender ? isBalanceExist.amount + e.amount : isBalanceExist.amount - e.amount;
-                    tempBalanceList.push(isBalanceExist);
+                    tempBalanceList.push({ ...isBalanceExist, amount: Number(isBalanceExist.amount) });
                 } else {
                     tempBalanceList.push({ lender: lender, borrower: borrower, amount: e.amount, groupId: e.groupId });
                 }
@@ -140,35 +141,64 @@ export default function BalanceList({ balanceLogList, getBalanceLogs }) {
             </Typography>
             <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 {balanceList.length > 0 &&
-                    userList.length > 0 &&
-                    userDetail.uid &&
+                userList.length > 0 &&
+                userDetail.uid &&
+                balanceList.filter(
+                    (a) => Math.floor(a.amount) !== 0 && a.amount !== NaN && (a.lender === userDetail.uid || a.borrower === userDetail.uid)
+                ).length > 0 ? (
                     balanceList
-                        .filter((a) => a.amount !== 0 && a.amount !== NaN && (a.lender === userDetail.uid || a.borrower === userDetail.uid))
+                        .filter(
+                            (a) =>
+                                Math.floor(a.amount) !== 0 &&
+                                a.amount !== NaN &&
+                                (a.lender === userDetail.uid || a.borrower === userDetail.uid)
+                        )
                         .map((value) => {
                             const labelId = value;
                             const lender = userList.filter((a) => a.uid === value.lender)[0];
                             const borrower = userList.filter((a) => a.uid === value.borrower)[0];
                             return itemList(value, lender, borrower, labelId, userDetail, handleSettleButtonClick);
-                        })}
+                        })
+                ) : (
+                    <Grid sx={{ width: '100%', bgcolor: 'background.paper', p: 2 }}>
+                        <Typography variant="subtitle1" component="h6" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
+                            No Balance to settle...
+                        </Typography>
+                    </Grid>
+                )}
             </List>
+
             <Divider variant="middle" />
             <Typography variant="h6" component="span" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
                 Other's
             </Typography>
             <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
                 {balanceList.length > 0 &&
-                    userList.length > 0 &&
-                    userDetail.uid &&
+                userList.length > 0 &&
+                userDetail.uid &&
+                balanceList.filter(
+                    (a) => !(a.lender === userDetail.uid || a.borrower === userDetail.uid) && Math.floor(a.amount) !== 0 && a.amount !== NaN
+                ).length > 0 ? (
                     balanceList
                         .filter(
-                            (a) => !(a.lender === userDetail.uid || a.borrower === userDetail.uid) && a.amount !== 0 && a.amount !== NaN
+                            (a) =>
+                                !(a.lender === userDetail.uid || a.borrower === userDetail.uid) &&
+                                Math.floor(a.amount) !== 0 &&
+                                a.amount !== NaN
                         )
                         .map((value) => {
                             const labelId = value;
                             const lender = userList.filter((a) => a.uid === value.lender)[0];
                             const borrower = userList.filter((a) => a.uid === value.borrower)[0];
                             return itemList(value, lender, borrower, labelId, userDetail);
-                        })}
+                        })
+                ) : (
+                    <Grid sx={{ width: '100%', bgcolor: 'background.paper', p: 2 }}>
+                        <Typography variant="subtitle1" component="h6" color="gray" textAlign="center" sx={{ flexGrow: 1 }}>
+                            No Balance to settle...
+                        </Typography>
+                    </Grid>
+                )}
             </List>
             <ConfirmDialog
                 confirmDialogObj={confirmDialogObj}

@@ -10,10 +10,11 @@ import { AppData } from '../contexts/AppContext';
 import { stringAvatar } from 'utils/avatar';
 
 export default function MemberList({ memberList }) {
-    const { userList } = AppData();
+    const { userList, userDetail } = AppData();
     return (
         <List dense sx={{ width: '100%', bgcolor: 'background.paper' }}>
-            {memberList.length > 0 &&
+            {userDetail.uid &&
+                memberList.length > 0 &&
                 userList.length > 0 &&
                 memberList.map((value) => {
                     const labelId = value;
@@ -25,7 +26,11 @@ export default function MemberList({ memberList }) {
                                 <ListItemAvatar>
                                     <Avatar {...stringAvatar(userFullName, 20)} />
                                 </ListItemAvatar>
-                                <ListItemText id={labelId} primary={userFullName} secondary={user.email} />
+                                <ListItemText
+                                    id={labelId}
+                                    primary={userDetail.uid === value ? 'You' : userFullName}
+                                    secondary={user.email}
+                                />
                             </ListItemButton>
                         </ListItem>
                     );

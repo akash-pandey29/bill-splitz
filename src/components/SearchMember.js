@@ -58,7 +58,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     }
 }));
 
-const SearchMember = ({ selectedUsers, setSelectedUsers }) => {
+const SearchMember = ({ selectedUsers, setSelectedUsers, existingMemberList }) => {
     const { user } = UserAuth();
     const { addGroup, userList, getAllUsers, userDetail } = AppData();
     const [filterUsers, setFilterUsers] = useState([]);
@@ -68,13 +68,24 @@ const SearchMember = ({ selectedUsers, setSelectedUsers }) => {
         let filterValue = event.target.value.toLowerCase();
         if (filterValue === '') setFilterUsers([]);
         else {
-            setFilterUsers(
-                userList.filter(
-                    (a) =>
-                        a.uid !== userDetail.uid &&
-                        (a.firstName.toLowerCase().includes(filterValue) || a.lastName.toLowerCase().includes(filterValue))
-                )
-            );
+            if (existingMemberList && existingMemberList.length > 0) {
+                setFilterUsers(
+                    userList.filter(
+                        (a) =>
+                            !existingMemberList.includes(a.uid) &&
+                            a.uid !== userDetail.uid &&
+                            (a.firstName.toLowerCase().includes(filterValue) || a.lastName.toLowerCase().includes(filterValue))
+                    )
+                );
+            } else {
+                setFilterUsers(
+                    userList.filter(
+                        (a) =>
+                            a.uid !== userDetail.uid &&
+                            (a.firstName.toLowerCase().includes(filterValue) || a.lastName.toLowerCase().includes(filterValue))
+                    )
+                );
+            }
         }
     };
 
@@ -99,9 +110,11 @@ const SearchMember = ({ selectedUsers, setSelectedUsers }) => {
             </Search>
             <Stack direction="row" spacing={1}>
                 {selectedUsers &&
+                    selectedUsers.length > 0 &&
                     selectedUsers.map((selectedUsr) => {
                         return (
                             <Chip
+                                key={selectedUsr.uid}
                                 label={selectedUsr.firstName}
                                 onDelete={() => handleRemoveSelectedMembers(selectedUsr.uid)}
                                 disabled={selectedUsr.uid === user.uid}
